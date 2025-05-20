@@ -1,7 +1,7 @@
 
 # Hammerspoon Smart Window Layout Manager
 
-A powerful **Hammerspoon** script to **automatically organize windows** based on your screen configuration. Includes **layout save/restore**, **keyboard shortcuts**, **menu bar controls**, and optional **Spotify notifications**.
+A powerful **Hammerspoon** script to **automatically organize windows** based on your screen configuration. Includes **layout save/restore**, **keyboard shortcuts**, **menu bar controls**.
 
 ---
 
