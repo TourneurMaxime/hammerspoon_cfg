@@ -61,19 +61,23 @@ This script assumes a triple-screen setup: **left**, **center**, and **right**.
 
 ### 📌 App-to-Screen Mapping
 
+### ⚠️ You may need to adapt the screen index to your setup (Lines 70 to 72) ⚠️
+
 #### 🖥️ Center Screen
-an array containing a list of paths to apps like `/Applications/Path/To/App.app` or `/System/Applications/App.app` or `/Users/your_user_name/Applications/App.app`
+An array containing a list of paths to apps like `/Applications/Path/To/App.app` or `/System/Applications/App.app` or `/Users/your_user_name/Applications/App.app`
 
 #### 👉 Right Screen
-An array containing a list of paths to apps like Center Screen array
+An array containing a list of paths to apps like `/Applications/Path/To/App.app` or `/System/Applications/App.app` or `/Users/your_user_name/Applications/App.app`
 
 #### 🚫 Apps Excluded from Maximization
 These apps will not be maximized
-An array containing a list of paths to apps
+
+An array containing a list of paths to apps like `/Applications/Path/To/App.app` or `/System/Applications/App.app` or `/Users/your_user_name/Applications/App.app`
 
 #### 🚫 Apps Excluded from Auto Move
 These apps won’t be automatically moved
-An array containing a list of paths to apps
+
+An array containing a list of paths to apps like `/Applications/Path/To/App.app` or `/System/Applications/App.app` or `/Users/your_user_name/Applications/App.app`
 
 ---
 
