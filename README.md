@@ -104,4 +104,5 @@ This script is optimized for a power-user workflow with:
 - Persistent layout management
 - Minimal manual intervention
 
+By default, the script targets only two screens to manage a specific list of applications, while the others are sent to the third screen.
 Feel free to adapt the app lists and screen behavior to match your preferences.
