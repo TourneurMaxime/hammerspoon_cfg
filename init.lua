@@ -1,37 +1,61 @@
--- Hammerspoon configuration file
--- This file is executed when Hammerspoon starts
+-- Hammerspoon
 
--- Initialization global variables
-hs.application.enableSpotlightForNameSearches(true)
-
+-- Setup
 local MIN_WIDTH = 500
 local MIN_HEIGHT = 300
+myMenu = nil
+hs.application.enableSpotlightForNameSearches(true)
 
 local appsPathOnFrontScreen = {
-    "/Applications/App.app",
-    "/System/Applications/App.app",
-    "/Users/your_user_name/Applications/App.app",
+    "/Applications/iTerm.app",
+    "/Applications/Microsoft Excel.app",
+    "/Applications/PhpStorm.app",
+    "/Applications/Visual Studio Code.app",
+    "/System/Applications/Messages.app",
+    "/System/Applications/Réglages Système.app",
+    "/System/Library/CoreServices/Centre de notifications.app",
+    "/System/Library/CoreServices/NotificationCenter.app",
+    "/Users/maximetourneur/Applications/Sharepoint.app",
 }
 
 local appsPathOnRightScreen = {
-    "/Applications/App.app",
-    "/System/Applications/App.app",
-    "/Users/your_user_name/Applications/App.app",
+    "/Applications/Arc.app",
+    "/Applications/Dia.app",
+    "/Applications/ChatGPT.app",
+    "/Applications/FileZilla.app",
+    "/Applications/Postman.app",
+    "/Applications/Web App.app",
+    "/Users/maximetourneur/Applications/Le Chat - Mistral AI.app",
+    "/Users/maximetourneur/Applications/Mammouth AI.app",
 }
 
 local excludedMaximizeAppsPath = {
-    "/Applications/App.app",
-    "/System/Applications/App.app",
-    "/Users/your_user_name/Applications/App.app",
+    "/Applications/iTerm.app",
+    "/Applications/Messenger.app",
+    "/Applications/NotchNook.app",
+    "/Applications/WhatsApp.app",
+    "/Applications/Termius.app",
+    "/System/Applications/Notes.app",
+    "/System/Applications/Messages.app",
+    "/System/Applications/Rappels.app",
+    "/System/Applications/Reminders.app",
 }
 
 local excludedAutoMoveAppsPath = {
-    "/Applications/App.app",
-    "/System/Applications/App.app",
-    "/Users/your_user_name/Applications/App.app",
+    "/Applications/DeepL.app",
+    "/Applications/NotchNook.app",
+    "/Applications/OneDrive.localized/OneDrive.app",
+    "/Applications/Raycast.app",
+    "/Applications/Shottr.app",
+    "/System/Library/CoreServices/Centre de contrôle.app",
+    "/System/Library/CoreServices/Control Center.app",
+    "/System/Library/CoreServices/ControlCenter.app",
+    "/System/Library/CoreServices/Dock.app",
+    "/System/Library/CoreServices/Finder.app",
+    "/System/Library/UserNotificationCenter.app",
 }
 
--- Functions
+-- Fonctions utilitaires
 local function contains(list, value)
     for _, v in ipairs(list) do
         if v == value then return true end
@@ -74,13 +98,25 @@ function organizeWindows()
     for _, win in ipairs(hs.window.allWindows()) do
         local app = win:application()
         local appPath = getAppPath(app)
+
+        if contains(excludedAutoMoveAppsPath, appPath) then goto continue end
+        if contains(excludedAutoMoveAppsPath, app:name()) then goto continue end
+
+        print("Organizing window: " .. win:title() .. " - " .. appPath)
+
         if contains(appsPathOnFrontScreen, appPath) then
             win:moveToScreen(frontScreen)
+            -- Correction calibrage pour NotificationCenter
+            if appPath == "/System/Library/CoreServices/NotificationCenter.app" or appPath == "/System/Library/CoreServices/Centre de notifications.app" then
+                local screenFrame = frontScreen:frame()
+                win:setFrame(screenFrame)
+            end
         elseif contains(appsPathOnRightScreen, appPath) then
             win:moveToScreen(rightScreen)
         else
             win:moveToScreen(leftScreen)
         end
+    ::continue::
     end
 end
 
@@ -89,6 +125,7 @@ function maximizeWindows()
         local app = win:application()
         local appPath = getAppPath(app)
         if not contains(excludedMaximizeAppsPath, appPath) and win:isStandard() then
+            print("Maximizing window: " .. win:title() .. " - " .. appPath)
             win:maximize()
         end
     end
@@ -150,28 +187,31 @@ function restoreSavedLayout()
 end
 
 -- Menu Hammerspoon
-myMenu = nil
 myMenu = hs.menubar.new()
 if myMenu then
-    myMenu:setTitle("™") -- Set the title of the menu bar item
+    myMenu:setTitle("™")
     myMenu:setMenu({
-        { title = "💾 Save actual layout", fn = saveCurrentLayout },
-        { title = "⏮️ Restore saved layout", fn = restoreSavedLayout },
+        { title = "💾 Sauvegarder layout actuel", fn = saveCurrentLayout },
+        { title = "⏮️ Restaurer layout sauvegardé", fn = restoreSavedLayout },
         { title = "-" },
-        { title = "🔁 Organize + Maximize windows", fn = organizeAndMaximizeWindows },
-        { title = "🔄 Organize windows (cmd + shift + g)", fn = organizeWindows },
-        { title = "🔼 Maximize windows (cmd + shift + m)", fn = maximizeWindows },
+        { title = "🔁 Organiser + Maximiser les fenêtres", fn = organizeAndMaximizeWindows },
+        { title = "🔄 Organiser les fenêtres (cmd + shift + g)", fn = organizeWindows },
+        { title = "🔼 Maximiser les fenêtres (cmd + shift + m)", fn = maximizeWindows },
         { title = "-" },
-        { title = "♻️ Reload Hammerspoon config", fn = function() hs.reload() end },
-        { title = "🛠️ Hammerspoon Console", fn = function() hs.openConsole(true) end },
+        { title = "♻️ Recharger la config Hammerspoon", fn = function() hs.reload() end },
+        { title = "🛠️ Console Hammerspoon", fn = function() hs.openConsole(true) end },
         { title = "-" },
-        { title = "❌ Quit Hammerspoon", fn = function() hs.application.get("Hammerspoon"):kill() end },
+        { title = "⚙️ Configuration Hammerspoon (.lua)", fn = function() hs.execute("open " .. hs.configdir) end },
+        { title = "❌ Quitter Hammerspoon", fn = function() hs.application.get("Hammerspoon"):kill() end },
     })
 end
 
--- Hotkeys
+-- Raccourcis clavier
 hs.hotkey.bind({ "cmd", "shift" }, "G", organizeWindows)
 hs.hotkey.bind({ "cmd", "shift" }, "M", maximizeWindows)
+hs.hotkey.bind({ "cmd", "alt" }, "R", function()
+    hs.execute('shortcuts run "Reminder"', true)
+end)
 
 -- Watchers
 function startCaffeinateWatcher()
@@ -201,6 +241,10 @@ function startScreenWatcher()
                 previousScreenConfig = currentScreenConfig
 
                 if #hs.screen.allScreens() >= 3 then
+                    hs.application.get("NotchNook"):kill()
+                    hs.timer.doAfter(0.5, function()
+                        hs.application.launchOrFocus("/Applications/NotchNook.app")
+                    end)
                     organizeAndMaximizeWindows()
                 end
             end
@@ -217,7 +261,7 @@ function startAppLaunchWatcher()
                 if not win then return end
                 local frame = win:frame()
                 if frame.w < MIN_WIDTH or frame.h < MIN_HEIGHT then return end
-                
+
                 if contains(excludedAutoMoveAppsPath, getAppPath(app)) then return end
                 if contains(excludedAutoMoveAppsPath, app:name()) then return end
 
@@ -250,15 +294,17 @@ end
 
 function startWindowCreationWatcher()
     hs.window.filter.new(nil):subscribe(hs.window.filter.windowCreated, function(win, appName)
+        appPath = getAppPath(win:application())
+        print("Window created: " .. win:title() .. " - " .. appPath)
         if not win then return end
 
         local frame = win:frame()
         if frame.w < MIN_WIDTH or frame.h < MIN_HEIGHT then return end
-        
+
         local app = win:application()
         local appPath = getAppPath(app)
         if not appPath then return end
-        
+
         if contains(excludedAutoMoveAppsPath, appPath) then return end
         if contains(excludedAutoMoveAppsPath, app:name()) then return end
 
@@ -272,6 +318,11 @@ function startWindowCreationWatcher()
         local frontScreen = screens[2]
         local leftScreen = screens[1]
         local rightScreen = screens[3]
+
+        if appPath == "/System/Library/Frameworks/Security.framework/Versions/A/MachServices/SecurityAgent.bundle" then
+            win:close()
+            return
+        end
 
         if contains(appsPathOnFrontScreen, appPath) then
             win:moveToScreen(frontScreen)
